@@ -8,6 +8,7 @@ import (
 	"github.com/urfave/cli"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type Statistics struct {
@@ -103,8 +104,9 @@ func getInput() ([]float64, error) {
 	results := make([]float64, 0)
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		var item string = scanner.Text()
-		if item == "" || item == " " {
+		var item string = strings.TrimSpace(scanner.Text())
+
+		if item == "" {
 			continue
 		}
 
