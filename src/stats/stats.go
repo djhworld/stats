@@ -54,9 +54,9 @@ func NewStatistics(data []float64) map[string]float64 {
 	return statistics
 }
 
-func Render(s map[string]float64, fields []string, valuesOnly bool) {
+func Render(s map[string]float64, fields []string, valuesOnly bool, delimiter string) {
 	if !valuesOnly {
-		fmt.Println(strings.Join(fields, "\t"))
+		fmt.Println(strings.Join(fields, delimiter))
 	}
 
 	for i, field := range fields {
@@ -64,9 +64,8 @@ func Render(s map[string]float64, fields []string, valuesOnly bool) {
 			fmt.Printf(RENDER_FORMATS[field], value)
 
 			if i < len(fields)-1 {
-				fmt.Printf("\t")
+				fmt.Printf(delimiter)
 			}
-
 		} else {
 			panic("Invalid field in output list: " + field)
 		}
@@ -84,9 +83,9 @@ func execute(c *cli.Context) {
 
 	output := c.StringSlice("output")
 	if len(output) == 0 {
-		Render(statistics, DEFAULT_FIELDS, c.Bool("values-only"))
+		Render(statistics, DEFAULT_FIELDS, c.Bool("values-only"), c.String("delimiter"))
 	} else {
-		Render(statistics, output, true)
+		Render(statistics, output, true, c.String("delimiter"))
 	}
 }
 
@@ -123,7 +122,12 @@ func main() {
 		},
 		cli.StringSliceFlag{
 			Name:  "output",
-			Usage: "(repeated) statistic to output (valid items are [count, sum, p99, p97, p95, min, max, avg, median, stddev])",
+			Usage: "statistic to output (valid items are [count, sum, p99, p97, p95, min, max, avg, median, stddev])",
+		},
+		cli.StringFlag{
+			Name:  "delimiter",
+			Usage: "output delimiter",
+			Value: "\t",
 		},
 	}
 
