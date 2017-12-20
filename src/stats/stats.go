@@ -24,6 +24,19 @@ const (
 	COUNT   = "count"
 )
 
+var RENDER_FORMATS = map[string]string{
+	P99:     "%.4f",
+	P97:     "%.4f",
+	P95:     "%.4f",
+	MAX:     "%.4f",
+	MIN:     "%.4f",
+	MEDIAN:  "%.4f",
+	AVERAGE: "%.4f",
+	STDDEV:  "%.4f",
+	SUM:     "%.0f",
+	COUNT:   "%.0f",
+}
+
 var DEFAULT_FIELDS []string = []string{COUNT, SUM, P99, P97, P95, MIN, MAX, AVERAGE, MEDIAN, STDDEV}
 
 func NewStatistics(data []float64) map[string]float64 {
@@ -47,32 +60,18 @@ func Render(s map[string]float64, fields []string, valuesOnly bool) {
 	}
 
 	for i, field := range fields {
-		fmt.Printf("%.4f", s[field])
-		if i < len(fields)-1 {
-			fmt.Printf("\t")
+		if value, ok := s[field]; ok {
+			fmt.Printf(RENDER_FORMATS[field], value)
+
+			if i < len(fields)-1 {
+				fmt.Printf("\t")
+			}
+
+		} else {
+			panic("Invalid field in output list: " + field)
 		}
 	}
 	fmt.Println()
-}
-
-func main() {
-	app := cli.NewApp()
-	app.Name = "stats"
-	app.Usage = "Outputs statistical information about line delimited numbers from stdin"
-	app.Action = execute
-
-	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:  "values-only",
-			Usage: "only output values (no header)",
-		},
-		cli.StringSliceFlag{
-			Name:  "output",
-			Usage: "(repeated) statistic to output (valid items are [count, sum, p99, p97, p95, min, max, avg, median, stddev])",
-		},
-	}
-
-	app.Run(os.Args)
 }
 
 func execute(c *cli.Context) {
@@ -109,4 +108,24 @@ func getInput() ([]float64, error) {
 	}
 
 	return results, nil
+}
+
+func main() {
+	app := cli.NewApp()
+	app.Name = "stats"
+	app.Usage = "Outputs statistical information about line delimited numbers from stdin"
+	app.Action = execute
+
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:  "values-only",
+			Usage: "only output values (no header)",
+		},
+		cli.StringSliceFlag{
+			Name:  "output",
+			Usage: "(repeated) statistic to output (valid items are [count, sum, p99, p97, p95, min, max, avg, median, stddev])",
+		},
+	}
+
+	app.Run(os.Args)
 }
