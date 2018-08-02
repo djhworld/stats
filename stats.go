@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/montanaflynn/stats"
-	"github.com/urfave/cli"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/montanaflynn/stats"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -55,22 +56,17 @@ func NewStatistics(data []float64) map[string]float64 {
 }
 
 func Render(s map[string]float64, fields []string, valuesOnly bool, delimiter string) {
-	if !valuesOnly {
-		fmt.Println(strings.Join(fields, delimiter))
-	}
-
-	for i, field := range fields {
+	for _, field := range fields {
 		if value, ok := s[field]; ok {
-			fmt.Printf(RENDER_FORMATS[field], value)
-
-			if i < len(fields)-1 {
-				fmt.Printf(delimiter)
+			if !valuesOnly {
+				fmt.Print(field + delimiter)
 			}
+			fmt.Printf(RENDER_FORMATS[field], value)
+			fmt.Println()
 		} else {
 			panic("Invalid field in output list: " + field)
 		}
 	}
-	fmt.Println()
 }
 
 func execute(c *cli.Context) {
