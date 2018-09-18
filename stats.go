@@ -16,6 +16,10 @@ const (
 	P99     = "p99"
 	P97     = "p97"
 	P95     = "p95"
+	P90     = "p90"
+	P75     = "p75"
+	P50     = "p50"
+	P25     = "p25"
 	MAX     = "max"
 	MIN     = "min"
 	MEDIAN  = "median"
@@ -29,6 +33,10 @@ var RENDER_FORMATS = map[string]string{
 	P99:     "%.4f",
 	P97:     "%.4f",
 	P95:     "%.4f",
+	P90:     "%.4f",
+	P75:     "%.4f",
+	P50:     "%.4f",
+	P25:     "%.4f",
 	MAX:     "%.4f",
 	MIN:     "%.4f",
 	MEDIAN:  "%.4f",
@@ -38,13 +46,17 @@ var RENDER_FORMATS = map[string]string{
 	COUNT:   "%.0f",
 }
 
-var DEFAULT_FIELDS []string = []string{COUNT, SUM, P99, P97, P95, MIN, MAX, AVERAGE, MEDIAN, STDDEV}
+var DEFAULT_FIELDS []string = []string{COUNT, SUM, P99, P97, P95, P90, P75, P50, P25, MIN, MAX, AVERAGE, MEDIAN, STDDEV}
 
 func NewStatistics(data []float64) map[string]float64 {
 	var statistics map[string]float64 = make(map[string]float64)
 	statistics[P99], _ = stats.Percentile(data, 99.0)
 	statistics[P97], _ = stats.Percentile(data, 97.0)
 	statistics[P95], _ = stats.Percentile(data, 95.0)
+	statistics[P90], _ = stats.Percentile(data, 90.0)
+	statistics[P75], _ = stats.Percentile(data, 75.0)
+	statistics[P50], _ = stats.Percentile(data, 50.0)
+	statistics[P25], _ = stats.Percentile(data, 25.0)
 	statistics[MAX], _ = stats.Max(data)
 	statistics[MIN], _ = stats.Min(data)
 	statistics[MEDIAN], _ = stats.Median(data)
@@ -118,7 +130,7 @@ func main() {
 		},
 		cli.StringSliceFlag{
 			Name:  "output",
-			Usage: "statistic to output (valid items are [count, sum, p99, p97, p95, min, max, avg, median, stddev])",
+			Usage: "statistic to output (valid items are [count, sum, p99, p97, p95, p90, p75, p50, p25, min, max, avg, median, stddev])",
 		},
 		cli.StringFlag{
 			Name:  "delimiter",
